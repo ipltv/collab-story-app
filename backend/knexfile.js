@@ -32,6 +32,17 @@ const config = {
       directory: path.join(__dirname, "./config/seeds"),
     },
   },
+  test: {
+    client: "pg",
+    connection: DATABASE_URL,
+    migrations: {
+      directory: path.join(__dirname, "./config/migrations"),
+      tableName: "knex_migrations",
+    },
+    seeds: {
+      directory: path.join(__dirname, "./config/seeds"),
+    }
+  },
 };
 
 module.exports = config;

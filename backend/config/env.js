@@ -5,7 +5,7 @@ dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.production" : ".env",
 });
 
-const requiredVars = ['DATABASE_URL', 'JWT_SECRET', 'ORIGIN_URL', 'PORT', 'NODE_ENV'];
+const requiredVars = ['DATABASE_URL', 'JWT_SECRET', 'ORIGIN_URL', 'PORT', 'NODE_ENV' ];
 
 for (const key of requiredVars) {
   if (!process.env[key]) {
