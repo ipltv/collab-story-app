@@ -1,8 +1,16 @@
-import { PORT } from './config/env.js';
-import express from 'express';
+import type { Server as HttpServer } from 'http';
+import type { Server as SocketIOServerType } from 'socket.io';
+
+const { createServer, Server } = require('node:http');
+const { PORT } = require('./config/env');
+const express = require('express');
+const { Server: SocketIOServer } = require('socket.io');
+
 
 const app = express();
+const server: HttpServer = createServer(app);
+const io: SocketIOServerType = new SocketIOServer(server);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
