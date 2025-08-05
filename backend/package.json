@@ -5,10 +5,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "cross-env NODE_ENV=production ts-node dist/index.js",
+    "start": "cross-env NODE_ENV=production ts-node index.ts",
     "dev": "cross-env NODE_ENV=development ts-node index.ts",
     "migrate:dev": "cross-env NODE_ENV=development knex --knexfile knexfile.js migrate:latest",
-    "migrate:prod": "cross-env NODE_ENV=production knex --knexfile knexfile.js migrate:latest"
+    "migrate:prod": "cross-env NODE_ENV=production knex --knexfile knexfile.js migrate:latest",
+    "seed:dev": "cross-env NODE_ENV=development knex seed:run --knexfile knexfile.js --env development",
+    "seed:prod": "cross-env NODE_ENV=production knex seed:run --knexfile knexfile.js --env production"
   },
   "keywords": [],
   "author": "",
