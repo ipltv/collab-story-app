@@ -80,3 +80,16 @@ export async function deleteUserHandler(req: Request, res: Response) {
         return res.status(500).json({ message: 'Failed to delete user.' });
     }
 }
+export async function getUserByUsernameHandler(req: Request, res: Response) {
+    const { username } = req.params;
+    if (!username) {
+        return res.status(400).json({ message: 'Username is required.' });
+    }
+    try {
+        const user = await getUserByUsername(username);
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+        return res.json(user);
+    } catch {
+        return res.status(500).json({ message: 'Failed to fetch user.' });
+    }
+}

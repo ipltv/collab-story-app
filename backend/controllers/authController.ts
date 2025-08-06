@@ -1,8 +1,7 @@
 import { type Request, type Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createUserHandler, getUserByUsername } from './userController.js';
-import { createUser } from '../models/userModel.js';
+import { createUser, getUserByUsername } from '../models/userModel.js';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const REFRESH_SECRET = process.env.REFRESH_SECRET!;
@@ -37,7 +36,7 @@ export async function login(req: Request, res: Response) {
         return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    const match = await bcrypt.compare(password, user.password_hash);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) {
         return res.status(401).json({ message: "Invalid credentials." });
     }
