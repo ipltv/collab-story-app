@@ -7,16 +7,18 @@
     "build": "tsc",
     "start": "cross-env NODE_ENV=production ts-node index.ts",
     "dev": "cross-env NODE_ENV=development ts-node index.ts",
-    "migrate:dev": "cross-env NODE_ENV=development knex --knexfile knexfile.js migrate:latest",
-    "migrate:prod": "cross-env NODE_ENV=production knex --knexfile knexfile.js migrate:latest",
-    "seed:dev": "cross-env NODE_ENV=development knex seed:run --knexfile knexfile.js --env development",
-    "seed:prod": "cross-env NODE_ENV=production knex seed:run --knexfile knexfile.js --env production"
+    "migrate:dev": "cross-env NODE_ENV=development knex migrate:latest --knexfile knexfile.cjs",
+    "migrate:rollback:dev": "cross-env NODE_ENV=development knex migrate:rollback --knexfile knexfile.cjs",
+    "seed:dev": "cross-env NODE_ENV=development knex seed:run --knexfile knexfile.cjs",
+    "migrate:prod": "cross-env NODE_ENV=production knex migrate:latest --knexfile knexfile.cjs",
+    "migrate:rollback:prod": "cross-env NODE_ENV=production knex migrate:rollback --knexfile knexfile.cjs",
+    "seed:prod": "cross-env NODE_ENV=production knex seed:run --knexfile knexfile.cjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -30,7 +32,9 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.2.0",
     "cross-env": "^10.0.0",
     "ts-node": "^10.9.2",

@@ -1,8 +1,9 @@
 console.log('Knexfile is being executed');
 const path = require("path");
-const { DATABASE_URL } = require("./config/env.js");
 
 console.log(path.join(__dirname, "./config/migrations"));
+const DATABASE_URL = process.env.DATABASE_URL;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 
 const config = {
@@ -45,4 +46,4 @@ const config = {
   },
 };
 
-module.exports = config;
+module.exports = config[NODE_ENV] || config.development;
