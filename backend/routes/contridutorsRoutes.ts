@@ -9,11 +9,11 @@ import { isAuthor } from 'middleware/storyPermissionMiddleware.js';
 
 const router = Router();
 
-// POST /contributors — add a contributor
+// POST /contributors/ add a contributor to a story with
 router.post('/', protect, isAuthor, addContributorHandler);
 
-// GET /contributors/:story_id — get all contributors for a story
-router.get('/:story_id', protect, getContributorsByStoryIdHandler);
+// GET /contributors/:id — get all contributors for a story
+router.get('/:id', protect, getContributorsByStoryIdHandler);
 
 // DELETE /contributors/:id — remove contributor by ID
 router.delete('/:id', protect, isAuthor, deleteContributorHandler);

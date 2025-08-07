@@ -8,21 +8,18 @@ import { getStoryById } from '../models/storyModel.js';
 
 
 export async function addContributorHandler(req: Request, res: Response) {
-    const { story_id, user_id } = req.body;
+    const { story_id, contributor_id } = req.body;
 
-    if (!story_id || !user_id) {
+    if (!story_id || !contributor_id) {
         return res.status(400).json({ message: 'story_id and user_id required.' });
     }
-
-    const story = await getStoryById(story_id);
-    if (!story || story.author_id !== user_id) {
-        return res.status(403).json({ message: 'Not authorized to add contributors to this story.' });
-    }
-
+    console.log(`Adding contributor with user ID: ${contributor_id} to story ID: ${story_id}`);
+    
     try {
-        const contributor = await addContributor({ story_id, user_id });
+        const contributor = await addContributor({ story_id, user_id: contributor_id });
         return res.status(201).json(contributor);
-    } catch {
+    } catch (error) {
+        console.error('Error adding contributor:', error);
         return res.status(500).json({ message: 'Failed to add contributor.' });
     }
 }
