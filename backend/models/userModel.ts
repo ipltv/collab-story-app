@@ -1,3 +1,4 @@
+import { log } from 'console';
 import db from '../db/index.js';
 import type { UserWithPassword, User } from '../types/index.js';
 
@@ -19,9 +20,12 @@ export async function getUserByUsername(username: string): Promise<UserWithPassw
 
 export async function createUser(user: Omit<UserWithPassword, 'id'>): Promise<User> {
     // We insert all fields, but only return non-sensitive data for security reasons.
+    console.log("Creating user:", user);
+
     const [created] = await db<UserWithPassword>('users')
         .insert(user)
         .returning(['id', 'username', 'email']);
+    console.log("User created:", created);
     if (!created) {
         throw new Error('Failed to create user.');
     }

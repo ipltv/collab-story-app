@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import e from 'express';
 
 // Load environment variables from the appropriate .env file.
 dotenv.config({
@@ -6,7 +7,7 @@ dotenv.config({
 });
 
 // A list of all required environment variables.
-const requiredVars = ['DATABASE_URL', 'JWT_SECRET', 'ORIGIN_URL', 'PORT', 'NODE_ENV'] as const;
+const requiredVars = ['DATABASE_URL', 'JWT_SECRET', 'ORIGIN_URL', 'PORT', 'NODE_ENV', 'JWT_REFRESH_SECRET'] as const;
 
 // Check if each required variable is defined.
 for (const key of requiredVars) {
@@ -24,3 +25,4 @@ export const JWT_SECRET = process.env.JWT_SECRET as string;
 export const ORIGIN_URL = process.env.ORIGIN_URL as string;
 export const PORT = process.env.PORT as string;
 export const NODE_ENV = process.env.NODE_ENV as string;
+export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;

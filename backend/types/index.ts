@@ -5,7 +5,7 @@ export interface User {
 }
 
 export interface UserWithPassword extends User {
-  password: string;
+  password_hash: string;
 }
 
 export interface Contributor {

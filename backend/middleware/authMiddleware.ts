@@ -1,5 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET,  JWT_REFRESH_SECRET } from 'config/env.js';
+import { log } from 'console';
 
 // Extend Express Request interface to include 'user'
 declare global {
@@ -9,8 +11,6 @@ declare global {
         }
     }
 }
-
-const JWT_SECRET = process.env.JWT_SECRET;
 
 interface JwtPayload {
     userId: number;
@@ -41,14 +41,13 @@ export function protect(req: Request, res: Response, next: NextFunction) {
 // for refreshing access tokens
 export function refreshAccessToken(req: Request, res: Response) {
     const refreshToken = req.cookies?.refreshToken;
-    const REFRESH_SECRET = process.env.REFRESH_SECRET!;
 
-    if (!refreshToken || !JWT_SECRET || !REFRESH_SECRET) {
+    if (!refreshToken || !JWT_SECRET || !JWT_REFRESH_SECRET) {
         return res.status(401).json({ message: 'No refresh token provided or missing secret.' });
     }
 
     try {
-        const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as JwtPayload;
+        const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as JwtPayload;
         const newAccessToken = jwt.sign({ userId: decoded.userId }, JWT_SECRET, { expiresIn: '15m' });
 
         return res.json({ accessToken: newAccessToken });

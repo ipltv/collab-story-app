@@ -2,22 +2,25 @@ import { type Request, type Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { createUser, getUserByUsername } from '../models/userModel.js';
+import { JWT_SECRET,  JWT_REFRESH_SECRET } from 'config/env.js';
+import { log } from 'console';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-const REFRESH_SECRET = process.env.REFRESH_SECRET!;
+
 const saltRounds = 10;
 
 export async function register(req: Request, res: Response) {
+    console.log("Registering user:", req.body);
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).json({ message: "All fields are required." });
     }
-
+    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     try {
-        const user = await createUser({ username, email, password: hashedPassword });
+        const user = await createUser({ username: normalizedUsername, email: normalizedEmail, password_hash: hashedPassword });
         return res.status(201).json({ message: "User registered successfully.", user });
     } catch {
         return res.status(500).json({ message: "Registration failed." });
@@ -26,23 +29,23 @@ export async function register(req: Request, res: Response) {
 
 export async function login(req: Request, res: Response) {
     const { username, password } = req.body;
-
     if (!username || !password) {
         return res.status(400).json({ message: "Username and password required." });
     }
+    const normalizedUsername = username.trim().toLowerCase();
 
-    const user = await getUserByUsername(username);
+    const user = await getUserByUsername(normalizedUsername);
     if (!user) {
         return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
         return res.status(401).json({ message: "Invalid credentials." });
     }
-
+    // Generate access and refresh tokens    
     const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, { expiresIn: '7d' });
+    const refreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
     return res.json({ accessToken });
