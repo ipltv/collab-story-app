@@ -18,7 +18,8 @@ interface JwtPayload {
 
 export function protect(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
-
+    console.log('Authorization header:', authHeader);
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Unauthorized. Missing token.' });
     }

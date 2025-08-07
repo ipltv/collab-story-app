@@ -39,7 +39,7 @@ export async function createUserHandler(req: Request, res: Response) {
     }
 
     try {
-        const user = await createUser({ username, email, password: password_hash });
+        const user = await createUser({ username, email, password_hash });
         return res.status(201).json(user);
     } catch {
         return res.status(500).json({ message: 'Failed to create user.' });
@@ -52,6 +52,9 @@ export async function updateUserHandler(req: Request, res: Response) {
     const updateFields = req.body;
     if (!updateFields || Object.keys(updateFields).length === 0) {
         return res.status(400).json({ message: 'No fields to update.' });
+    }
+    if (updateFields.id) {
+        return res.status(400).json({ message: 'User ID cannot be changed.' });
     }
     if (updateFields.password) {
         return res.status(400).json({ message: 'Password cannot be updated directly.' });
