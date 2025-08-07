@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL; 
 
 interface User {
     id: number;
@@ -26,7 +27,7 @@ export const setUserFromToken = createAsyncThunk(
     'user/setUserFromToken',
     async (token: string, thunkAPI) => {
         try {
-            const response = await axios.get('/api/auth/me', {
+            const response = await axios.get(`${API_URL}/api/auth/me`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -45,9 +46,9 @@ export const loginUser = createAsyncThunk(
         thunkAPI
     ) => {
         try {
-            const response = await axios.post('/api/auth/login', credentials);
+            const response = await axios.post(`${API_URL}/api/auth/login`, credentials);
             const accessToken = response.data.accessToken;
-            localStorage.setItem('accessToken', accessToken); // можно настроить безопаснее
+            localStorage.setItem('accessToken', accessToken);//ToDo: handle token storage securely
             await thunkAPI.dispatch(setUserFromToken(accessToken));
             return accessToken;
         } catch (err: any) {
