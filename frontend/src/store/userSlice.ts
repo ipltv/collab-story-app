@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL; 
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface User {
     id: number;
@@ -57,6 +57,21 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+export const registerUser = createAsyncThunk(
+    'user/registerUser',
+    async (credentials: { username: string; email: string; password: string }, thunkAPI) => {
+        try {
+            const response = await axios.post(`${API_URL}/api/auth/register`, credentials);
+            const accessToken = response.data.accessToken;
+            localStorage.setItem('accessToken', accessToken);
+            await thunkAPI.dispatch(setUserFromToken(accessToken));
+            return accessToken;
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Registration failed');
+        }
+    }
+);
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -71,6 +86,9 @@ const userSlice = createSlice({
             state.isAuthenticated = false;
             state.error = null;
         },
+        clearError(state) {
+            state.error = null;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -82,11 +100,18 @@ const userSlice = createSlice({
                 state.user = action.payload;
                 state.isAuthenticated = true;
                 state.loading = false;
+                state.error = null;
             })
             .addCase(setUserFromToken.rejected, (state, action) => {
-                state.loading = false;
-                state.isAuthenticated = false;
-                state.error = action.payload as string;
+                if (action.payload === "Invalid or expired token.") {
+                    state.loading = false;
+                    state.isAuthenticated = false;
+                    state.error = null;
+                } else {
+                    state.loading = false;
+                    state.isAuthenticated = false;
+                    state.error = action.payload as string;
+                }
             });
         builder
             .addCase(loginUser.pending, (state) => {
@@ -101,8 +126,21 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
+        builder
+            .addCase(registerUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(registerUser.fulfilled, (state) => {
+                state.loading = false;
+                state.isAuthenticated = true;
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
     },
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, clearError } = userSlice.actions;
 export default userSlice.reducer;

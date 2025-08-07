@@ -7,6 +7,7 @@ import { setUserFromToken } from './store/userSlice';
 import StoryList from './components/StoryList';
 import LoginPage from './components/LoginPage';
 import StoryEditor from './components/StoryEditor';
+import RegisterPage from './components/RegisterPage';
 
 const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
 
@@ -33,6 +34,10 @@ export default function App() {
         <Route
           path="/stories/:id"
           element={user ? <StoryEditor /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/register"
+          element={user ? <Navigate to="/" replace /> : <RegisterPage />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

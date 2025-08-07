@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../store/userSlice';
+import { useNavigate, Link } from 'react-router-dom';
+import { loginUser, clearError } from '../store/userSlice';
 import { type AppDispatch, type RootState } from '../store/store';
 
 export default function LoginPage() {
@@ -17,16 +17,17 @@ export default function LoginPage() {
     };
 
     useEffect(() => {
+        dispatch(clearError());
         if (isAuthenticated) {
-            navigate('/stories'); // or wherever needed
+            navigate('/stories');
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, dispatch]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="w-full max-w-sm p-8 bg-white rounded-xl shadow-lg border border-gray-200 transform transition-all duration-300 hover:scale-105">
                 <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-                    Login to your account
+                    Login
                 </h2>
                 <div className="space-y-4">
                     <input
@@ -57,6 +58,12 @@ export default function LoginPage() {
                 >
                     {loading ? 'Logging in...' : 'Login'}
                 </button>
+                <div className="mt-6 text-center text-sm text-gray-600">
+                    Don't have an account?{" "}
+                    <Link to="/register" className="text-blue-600 hover:underline font-medium">
+                        Register
+                    </Link>
+                </div>
             </div>
         </div>
     );
