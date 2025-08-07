@@ -4,6 +4,7 @@ import {
   createStoryHandler,
   updateStoryHandler,
   deleteStoryHandler,
+  getMyStoriesHandler,
 } from '../controllers/storyController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import {
@@ -24,5 +25,9 @@ router.patch('/:id', protect, isAuthorOrContributor, updateStoryHandler);
 
 // DELETE /stories/:id - delete story (requires auth + only author)
 router.delete('/:id', protect, isAuthor, deleteStoryHandler);
+
+// GET /stories/my - get stories created by the authenticated user
+router.get('/my', protect, getMyStoriesHandler);
+
 
 export default router;

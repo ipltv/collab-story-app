@@ -92,3 +92,16 @@ export async function deleteStoryHandler(req: Request, res: Response) {
         return res.status(500).json({ message: 'Failed to delete story.' });
     }
 }
+
+export async function getMyStoriesHandler(req: AuthenticatedRequest, res: Response) {
+    const userId = req.user?.id;
+
+    try {
+        const stories = await getAllStories();
+        const userStories = stories.filter(story => story.author_id === userId);
+        return res.json(userStories);
+    } catch (error) {
+        log('Error fetching user stories:', error);
+        return res.status(500).json({ message: 'Failed to fetch user stories.' });
+    }
+}
