@@ -1,9 +1,9 @@
 import { type Request, type Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createUser, getUserByUsername } from '../models/userModel.js';
-import { JWT_SECRET,  JWT_REFRESH_SECRET } from 'config/env.js';
-import { log } from 'console';
+import { createUser, getUserById, getUserByUsername } from '../models/userModel.js';
+import { JWT_SECRET, JWT_REFRESH_SECRET } from 'config/env.js';
+import { getStoriesByAuthor } from '../models/storyModel.js';
 
 
 const saltRounds = 10;
@@ -58,4 +58,20 @@ export async function logout(req: Request, res: Response) {
         sameSite: 'strict',
     });
     return res.json({ message: "Logged out successfully." });
+}
+
+// Returns the current user's profile and their stories
+export async function getMeProfile(req: Request, res: Response) {
+    const id = req.user?.id; // User is set by auth middleware
+    const userId = Number(id);
+    try {
+        const user = await getUserById(userId);
+        const stories = await getStoriesByAuthor(userId);
+        const storiesIds = stories.map(story => story.id);
+        const userProfile = { ...user, stories: storiesIds };
+        return res.json(userProfile);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch user profile." });
+        return;
+    }
 }

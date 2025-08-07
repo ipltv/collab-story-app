@@ -3,9 +3,10 @@ import {
   register,
   login,
   logout,
+  getMeProfile
 } from '../controllers/authController.js';
 
-import { refreshAccessToken } from '../middleware/authMiddleware.js';
+import { refreshAccessToken, protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -20,5 +21,8 @@ router.post('/logout', logout);
 
 // Refresh access token using refresh token
 router.get('/refresh', refreshAccessToken);
+
+// Get current user profile
+router.get('/me', protect, getMeProfile);
 
 export default router;

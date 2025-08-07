@@ -58,3 +58,9 @@ export async function isUserStoryAuthorOrContributor(storyId: number, userId: nu
 
     return Boolean(contributor);
 }
+
+export async function getStoriesByAuthor(authorId: number): Promise<StoryDB[]> {
+    return db<StoryDB>('stories')
+        .where({ author_id: authorId })
+        .select('id', 'title', 'content', 'author_id', 'created_at', 'updated_at');
+}
