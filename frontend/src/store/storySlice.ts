@@ -28,9 +28,11 @@ export const fetchStories = createAsyncThunk(
     'story/fetchStories',
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`${API_URL}/api/stories`, {
-                headers: { Authorization: `Bearer ${token}` },
+            const accessToken = localStorage.getItem('accessToken');
+            console.log(`Fetching stories with token: ${accessToken}`);
+            
+            const response = await axios.get(`${API_URL}/api/stories/my`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
             });
             return response.data;
         } catch (err: any) {

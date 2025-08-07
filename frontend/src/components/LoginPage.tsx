@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/userSlice';
 import { type AppDispatch, type RootState } from '../store/store';
+
 export default function LoginPage() {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -17,38 +18,46 @@ export default function LoginPage() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/stories'); // или куда надо
+            navigate('/stories'); // or wherever needed
         }
     }, [isAuthenticated, navigate]);
 
     return (
-        <div className="p-4 max-w-md mx-auto">
-            <h2 className="text-2xl font-semibold mb-4">Login</h2>
-
-            <input
-                className="input input-bordered w-full mb-2"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-
-            <input
-                type="password"
-                className="input input-bordered w-full mb-2"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <button
-                className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
-                onClick={handleLogin}
-                disabled={loading}
-            >
-                {loading ? 'Logging in...' : 'Login'}
-            </button>
-
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-sm p-8 bg-white rounded-xl shadow-lg border border-gray-200 transform transition-all duration-300 hover:scale-105">
+                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+                    Login to your account
+                </h2>
+                <div className="space-y-4">
+                    <input
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="password"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                {error && (
+                    <p className="text-red-500 text-sm text-center mt-4">
+                        {error}
+                    </p>
+                )}
+                <button
+                    className={`w-full mt-6 py-3 px-4 rounded-lg text-white font-semibold transition-all duration-300 ${
+                        loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+                    onClick={handleLogin}
+                    disabled={loading}
+                >
+                    {loading ? 'Logging in...' : 'Login'}
+                </button>
+            </div>
         </div>
     );
 }

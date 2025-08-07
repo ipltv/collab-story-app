@@ -15,7 +15,7 @@ export default function App() {
   const user = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       dispatch(setUserFromToken(token));
     }
