@@ -1,3 +1,5 @@
+import type { Request as ExpressRequest } from 'express';
+
 export interface User {
   id: number;
   username: string;
@@ -29,11 +31,14 @@ export interface StoryWithAuthor extends Omit<StoryDB, 'created_by'> {
 }
 
 export interface CreateStoryBody {
-    title: string;
-    content: string;
+  id: number; // ID of the user creating the story
+  title: string;
+  content: string;
 }
 
-export interface AuthenticatedRequest extends Request {
-  user: User;
 
+export interface AuthenticatedRequest extends ExpressRequest {
+  user?: {
+    id: number;
+  };
 }

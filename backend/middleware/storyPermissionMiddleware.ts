@@ -5,7 +5,8 @@ export async function isAuthorOrContributor(req: Request, res: Response, next: N
     try {
         const storyId = Number(req.params.id);
         const userId = req.user?.id;
-
+        console.log(`Checking permissions for user ID: ${userId} on story ID: ${storyId}`);
+        
         if (!userId) {
             return res.status(401).json({ error: 'Unauthorized: no user ID found' });
         }

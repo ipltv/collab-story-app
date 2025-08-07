@@ -9,6 +9,7 @@ import {
 } from '../models/storyModel.js';
 import { getUserById } from 'models/userModel.js';
 import type { CreateStoryBody } from '../types/index.js';
+import { log } from 'console';
 
 export async function getAllStoriesHandler(req: Request, res: Response) {
     try {
@@ -24,25 +25,26 @@ export async function createStoryHandler(req: AuthenticatedRequest, res: Respons
         return res.status(400).json({ message: 'Invalid request body.' });
     }
 
-    const { title, content } = req.body as unknown as CreateStoryBody;
-
+    const { title, content } = req.body as CreateStoryBody;
+    
     if (!title || !content) {
         return res.status(400).json({ message: 'Title and content are required.' });
     }
 
-    const author = await getUserById(req.user.id);
-    if (!author) {
-        return res.status(404).json({ message: 'Author not found.' });
+    const user = req.user;
+    if (!user || !user.id) {
+        return res.status(401).json({ message: 'Unauthorized: no user ID found' });
     }
 
     try {
         const story = await createStory({
             title,
             content,
-            author_id: author.id,
+            author_id: user.id, 
         });
         return res.status(201).json(story);
-    } catch {
+    } catch (e) {
+        log('Error creating story:', e);
         return res.status(500).json({ message: 'Failed to create story.' });
     }
 }
@@ -50,6 +52,8 @@ export async function createStoryHandler(req: AuthenticatedRequest, res: Respons
 export async function updateStoryHandler(req: Request, res: Response) {
     const { id } = req.params;
     const storyId = Number(id);
+    console.log(`Updating story with ID: ${storyId}`);
+    
     if (isNaN(storyId) || !id) {
         return res.status(400).json({ message: 'Invalid story ID provided.' });
     }
@@ -58,7 +62,7 @@ export async function updateStoryHandler(req: Request, res: Response) {
     }
 
     const { title, content } = req.body as unknown as CreateStoryBody;
-    
+
     if (!title || !content) {
         return res.status(400).json({ message: 'Title and content are required.' });
     }
@@ -66,7 +70,8 @@ export async function updateStoryHandler(req: Request, res: Response) {
     try {
         const updated = await updateStory(storyId, { title, content });
         return res.json(updated);
-    } catch {
+    } catch (error) {
+        log('Error updating story:', error);
         return res.status(500).json({ message: 'Failed to update story.' });
     }
 }

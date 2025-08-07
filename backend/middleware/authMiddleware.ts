@@ -2,6 +2,7 @@ import { type Request, type Response, type NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET,  JWT_REFRESH_SECRET } from 'config/env.js';
 import { log } from 'console';
+import type { AuthenticatedRequest } from 'types/index.js';
 
 // Extend Express Request interface to include 'user'
 declare global {
@@ -32,7 +33,7 @@ export function protect(req: Request, res: Response, next: NextFunction) {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as unknown as JwtPayload;
-        req.user = { id: decoded.userId };
+        (req as AuthenticatedRequest).user = { id: decoded.userId };
         next();
     } catch (error) {
         return res.status(403).json({ message: 'Invalid or expired token.' });
