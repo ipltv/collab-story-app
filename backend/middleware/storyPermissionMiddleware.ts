@@ -51,7 +51,7 @@ export async function isAuthor(req: Request, res: Response, next: NextFunction) 
             return res.status(404).json({ error: 'Story not found' });
         }
 
-        if (story.author.id !== userId) {
+        if (story.author_id !== userId) {
             return res.status(403).json({ error: 'Forbidden: access denied' });
         }
 

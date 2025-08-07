@@ -17,3 +17,10 @@ export async function addContributor(data: Omit<Contributor, 'id' | 'added_at'>)
     }
     return created as Contributor;
 }
+
+export async function removeContributor(id: number): Promise<void> {
+    const deleted = await db('contributors').where({ id }).del();
+    if (deleted === 0) {
+        throw new Error('Failed to remove contributor.');
+    }
+}

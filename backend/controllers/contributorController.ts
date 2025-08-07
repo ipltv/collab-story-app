@@ -6,7 +6,8 @@ import {
 } from '../models/collaboratorModel.js';
 import { getStoryById } from '../models/storyModel.js';
 
-export async function addStoryContributor(req: Request, res: Response) {
+
+export async function addContributorHandler(req: Request, res: Response) {
     const { story_id, user_id } = req.body;
 
     if (!story_id || !user_id) {
@@ -14,7 +15,7 @@ export async function addStoryContributor(req: Request, res: Response) {
     }
 
     const story = await getStoryById(story_id);
-    if (!story || story.created_by !== req.user.id) {
+    if (!story || story.author_id !== user_id) {
         return res.status(403).json({ message: 'Not authorized to add contributors to this story.' });
     }
 
@@ -26,23 +27,29 @@ export async function addStoryContributor(req: Request, res: Response) {
     }
 }
 
-export async function getContributors(req: Request, res: Response) {
-    const { story_id } = req.params;
+export async function getContributorsByStoryIdHandler(req: Request, res: Response) {
+    const { id } = req.params;
+    const storyId = Number(id);
+    if (isNaN(storyId) || !id) {
+        return res.status(400).json({ message: 'Invalid story ID provided.' });
+    }
 
     try {
-        const contributors = await getContributorsByStory(+story_id);
+        const contributors = await getContributorsByStory(storyId);
         return res.json(contributors);
     } catch {
         return res.status(500).json({ message: 'Failed to fetch contributors.' });
     }
 }
 
-export async function removeStoryContributor(req: Request, res: Response) {
+export async function deleteContributorHandler(req: Request, res: Response) {
     const { id } = req.params;
-
+    const contributorId = Number(id);
+    if (isNaN(contributorId) || !id) {
+        return res.status(400).json({ message: 'Invalid story ID provided.' });
+    }
     try {
-        // You may add check for story author
-        await removeContributor(+id);
+        await removeContributor(contributorId);
         return res.json({ message: 'Contributor removed.' });
     } catch {
         return res.status(500).json({ message: 'Failed to remove contributor.' });
