@@ -1,4 +1,5 @@
 import { type Request, type Response } from 'express';
+import type { AuthenticatedRequest } from '../types/index.js';
 import {
     getAllStories,
     getStoryById,
@@ -6,6 +7,8 @@ import {
     updateStory,
     deleteStory,
 } from '../models/storyModel.js';
+import { getUserById } from 'models/userModel.js';
+import type { CreateStoryBody } from '../types/index.js';
 
 export async function getAllStoriesHandler(req: Request, res: Response) {
     try {
@@ -16,22 +19,27 @@ export async function getAllStoriesHandler(req: Request, res: Response) {
     }
 }
 
-export async function createStoryHandler(req: Request, res: Response) {
-    const { title, content } = req.body;
+export async function createStoryHandler(req: AuthenticatedRequest, res: Response) {
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ message: 'Invalid request body.' });
+    }
+
+    const { title, content } = req.body as unknown as CreateStoryBody;
 
     if (!title || !content) {
         return res.status(400).json({ message: 'Title and content are required.' });
     }
 
-    if (!req.user || !req.user.id) {
-        return res.status(401).json({ message: 'User not authenticated.' });
+    const author = await getUserById(req.user.id);
+    if (!author) {
+        return res.status(404).json({ message: 'Author not found.' });
     }
 
     try {
         const story = await createStory({
             title,
             content,
-            created_by: req.user.id
+            author_id: author.id,
         });
         return res.status(201).json(story);
     } catch {
@@ -45,8 +53,12 @@ export async function updateStoryHandler(req: Request, res: Response) {
     if (isNaN(storyId) || !id) {
         return res.status(400).json({ message: 'Invalid story ID provided.' });
     }
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ message: 'Invalid request body.' });
+    }
 
-    const { title, content } = req.body;
+    const { title, content } = req.body as unknown as CreateStoryBody;
+    
     if (!title || !content) {
         return res.status(400).json({ message: 'Title and content are required.' });
     }

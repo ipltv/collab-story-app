@@ -1,15 +1,15 @@
-import type { Server as HttpServer } from 'http';
-import type { Server as SocketIOServerType } from 'socket.io';
-
-const { createServer, Server } = require('node:http');
-const { PORT } = require('./config/env');
-const express = require('express');
-const { Server: SocketIOServer } = require('socket.io');
-
+import { createServer } from 'node:http';
+import express from 'express';
+import { Server as SocketIOServer } from 'socket.io';
+import router from './routes/index.js';
+import { PORT } from './config/env.js';
 
 const app = express();
-const server: HttpServer = createServer(app);
-const io: SocketIOServerType = new SocketIOServer(server);
+app.use(express.json());
+app.use(router);
+
+const server = createServer(app);
+const io = new SocketIOServer(server);
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

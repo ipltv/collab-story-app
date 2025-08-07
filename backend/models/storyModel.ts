@@ -1,32 +1,32 @@
 import db from '../db/index.js';
-import type { Story } from '../types/index.js';
+import type { StoryDB } from '../types/index.js';
 
-export async function getAllStories(): Promise<Story[]> {
-    return db<Story>('stories').select('id', 'title', 'description', 'created_by', 'created_at');
+export async function getAllStories(): Promise<StoryDB[]> {
+    return db<StoryDB>('stories').select('id', 'title', 'description', 'created_by', 'created_at');
 }
 
-export async function getStoryById(id: number): Promise<Story | undefined> {
-    return db<Story>('stories')
+export async function getStoryById(id: number): Promise<StoryDB | undefined> {
+    return db<StoryDB>('stories')
         .where({ id })
         .select('id', 'title', 'description', 'created_by', 'created_at')
         .first();
 }
 
-export async function createStory(data: Omit<Story, 'id' | 'created_at'>): Promise<Story> {
-    // Returning specific fields is safer and more explicit.
-    const [created] = await db<Story>('stories')
-        .insert(data)
-        .returning(['id', 'title', 'description', 'created_by', 'created_at']);
+export async function createStory(data: Omit<StoryDB, 'id' | 'created_at' | 'updated_at'>): Promise<StoryDB> {
+  const [created] = await db<StoryDB>('stories')
+    .insert(data)
+    .returning(['id', 'title', 'content', 'author_id', 'created_at', 'updated_at']);
 
-    if (!created) {
-        throw new Error('Failed to create story.');
-    }
+  if (!created) {
+    throw new Error('Failed to create story.');
+  }
 
-    return created as Story;
+  return created as StoryDB;
 }
 
-export async function updateStory(id: number, story: Omit<Story, 'id'>): Promise<Story> {
-    const updated = await db<Story>('stories')
+
+export async function updateStory(id: number, story: Omit<StoryDB, 'id' | 'updated_at' | 'created_at' | 'author_id'>): Promise<StoryDB> {
+    const updated = await db<StoryDB>('stories')
         .where({ id })
         .update(story)
         .returning(['id', 'title', 'description', 'author_id', 'created_at']).first();
@@ -35,7 +35,7 @@ export async function updateStory(id: number, story: Omit<Story, 'id'>): Promise
         throw new Error('Failed to update story.');
     }
 
-    return updated as Story;
+    return updated as StoryDB;
 }
 
 export async function deleteStory(id: number): Promise<boolean> {
