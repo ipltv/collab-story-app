@@ -30,13 +30,28 @@ export const fetchStories = createAsyncThunk(
         try {
             const accessToken = localStorage.getItem('accessToken');
             console.log(`Fetching stories with token: ${accessToken}`);
-            
+
             const response = await axios.get(`${API_URL}/api/stories/my`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             return response.data;
         } catch (err: any) {
             return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch stories');
+        }
+    }
+);
+
+export const addStory = createAsyncThunk(
+    'story/addStory',
+    async (storyData: { title: string; content: string }, thunkAPI) => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await axios.post(`${API_URL}/api/stories`, storyData, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to add new story');
         }
     }
 );
@@ -68,6 +83,19 @@ const storySlice = createSlice({
                 state.loading = false;
             })
             .addCase(fetchStories.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
+        builder
+            .addCase(addStory.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addStory.fulfilled, (state, action: PayloadAction<Story>) => {
+                state.stories.push(action.payload);
+                state.loading = false;
+            })
+            .addCase(addStory.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

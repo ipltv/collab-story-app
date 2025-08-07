@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface User {
@@ -72,6 +73,34 @@ export const registerUser = createAsyncThunk(
     }
 );
 
+export const logoutUser = createAsyncThunk(
+    'user/logoutUser',
+    async (_, thunkAPI) => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const refreshToken = Cookies.get('refreshToken');
+            if (accessToken && refreshToken) {
+                // Send logout request to server. 
+                // Acctualy, server-side doen't expext payload for logout (only header), but we can send it for consistency and future use
+                await axios.post(`${API_URL}/api/auth/logout`, { refreshToken }, {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+            }
+
+            localStorage.removeItem('accessToken');
+            Cookies.remove('refreshToken');
+
+            return true;
+        } catch (err: any) {
+            // Even if logout fails, we clear local state
+            // This is important to ensure client-side state is consistent
+            localStorage.removeItem('accessToken');
+            Cookies.remove('refreshToken');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Logout failed, but client state cleared');
+        }
+    }
+);
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -137,6 +166,22 @@ const userSlice = createSlice({
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
+                state.error = action.payload as string;
+            });
+        builder
+            .addCase(logoutUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.loading = false;
+                state.user = null;
+                state.isAuthenticated = false;
+                state.error = null;
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
+                state.loading = false;
+                state.user = null;
+                state.isAuthenticated = false;
                 state.error = action.payload as string;
             });
     },

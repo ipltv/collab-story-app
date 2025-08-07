@@ -67,9 +67,9 @@ export default function RegisterPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    {error && (
+                    {error || localError && (
                         <p className="text-red-500 text-sm text-center">
-                            {error}
+                            {error || localError}
                         </p>
                     )}
                     <button
