@@ -44,7 +44,8 @@ Welcome to the Collaborative Storytelling App! This is a full-stack application 
 
 ### Installation
 1. **Clone the repository:**
-   ```bash
+   ```
+   bash
    git clone [repository-url]
    cd [repository-name]
    ```
