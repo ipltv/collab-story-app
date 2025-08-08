@@ -1,0 +1,12 @@
+URL: URL: https://github.com/ipltv/collab-story-app/blob/main/!forAIChecker/allApp.tsx
+suggestions for improvement:
+- The frontend stores the access token in `localStorage`, which violates the instruction to store it in the Redux store and not in `localStorage`.
+- The backend lacks input sanitization in several places beyond password hashing.  Always sanitize user inputs before using them in database queries or other sensitive operations to prevent SQL injection vulnerabilities.
+- Error handling could be more robust and informative.  Provide more specific error messages to the client, without revealing sensitive information.
+- The `refreshAccessToken` function in the backend does not check if the refresh token is valid or has expired, before signing a new accessToken.
+- Improve the performance of database queries. Use appropriate indexes and optimize queries for better efficiency. Use query builder for more efficient queries.
+- The frontend's handling of error messages could be improved. Consider using a more user-friendly approach to display errors, potentially with clear visual feedback.
+- Implement more comprehensive testing for the authentication and authorization logic. Use unit tests, integration tests etc.
+- The project lacks documentation explaining how to start the project, environment variables etc. Add a README.md file with instructions on how to run the application and set up the database.
+Correctness: 90%
+-----
